@@ -1,0 +1,57 @@
+# Render Blueprint: one Node web service running the whole Next.js app (UI + API).
+# Database: a free Neon PostgreSQL (or any Postgres) — set DATABASE_URL in the dashboard.
+services:
+  - type: web
+    name: startup-finder
+    runtime: node
+    plan: free
+    region: ohio # same AWS region as the Neon database (us-east-2) for low latency
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false # paste your Neon connection string (…?sslmode=require)
+      - key: CRON_SECRET
+        generateValue: true # protects POST /api/cron/refresh (Authorization: Bearer <value>). Closed if unset. See docs/SCHEDULING.md
+      - key: APP_PASSWORD
+        sync: false # leave EMPTY for a public site; set it only to lock the whole site behind a login
+      - key: SEARCH_API_KEY
+        sync: false # optional (Brave Search API)
+      - key: TAVILY_API_KEY
+        sync: false # optional (Tavily news search, supplements the free RSS feeds)
+
+  # OPTIONAL: a real scheduler that runs inside Render (Render Cron Jobs are a paid service type, so this is
+  # commented out). Uncomment and set DATABASE_URL to refresh every 6 hours without any HTTP call.
+  # - type: cron
+  #   name: jyntra-refresh
+  #   runtime: node
+  #   region: ohio
+  #   schedule: "17 */6 * * *"
+  #   buildCommand: npm ci --include=dev
+  #   startCommand: npm run refresh
+  #   envVars:
+  #     - key: NODE_VERSION
+  #       value: "22"
+  #     - key: DATABASE_URL
+  #       sync: false
+
+  # RECOMMENDED for production ingestion: a always-on worker (Render "worker" services are a paid type, so it is commented out).
+  # It polls the durable schedule in PostgreSQL, runs bounded concurrent passes and daily incremental discovery, and shuts down
+  # gracefully on SIGTERM. Without it, use .github/workflows/ingest.yml or POST /api/cron/refresh?scope=ingest.
+  # - type: worker
+  #   name: jyntra-jobs-worker
+  #   runtime: node
+  #   region: ohio
+  #   buildCommand: npm ci --include=dev
+  #   startCommand: npm run jobs:worker
+  #   envVars:
+  #     - key: NODE_VERSION
+  #       value: "22"
+  #     - key: DATABASE_URL
+  #       sync: false
+  #     - key: JOB_INGESTION_CONCURRENCY
+  #       value: "5"

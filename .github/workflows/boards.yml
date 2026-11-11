@@ -1,0 +1,21 @@
+# Keeps the city company boards (Hyderabad etc.) fresh. Needs the same APP_URL and CRON_SECRET secrets as refresh.yml.
+# GitHub cron is best-effort (minimum 5 minutes, often delayed) and pauses after 60 days without repo activity.
+name: refresh-company-boards
+on:
+  schedule:
+    - cron: "11 */2 * * *"   # every 2 hours
+  workflow_dispatch: {}
+permissions: {}
+jobs:
+  boards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sync company boards (continues on the server)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$APP_URL" && test -n "$CRON_SECRET" || { echo "APP_URL / CRON_SECRET secrets are not set"; exit 1; }
+          curl --fail-with-body --silent --show-error --max-time 60 --retry 2 --retry-delay 10 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/refresh?scope=boards"

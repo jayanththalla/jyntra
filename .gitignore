@@ -1,0 +1,19 @@
+node_modules/
+.next/
+.cache/
+.pgdata/
+.claude/
+# Exported contact lists — personal data, keep out of git
+exports/
+.env
+.env.local
+next-env.d.ts
+*.tsbuildinfo
+.neon
+# Real secrets stay out of git; the blank template .env.example IS committed.
+.env.*
+!.env.example
+# Test artefacts
+shots/
+*.log
+reports/

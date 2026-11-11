@@ -1,0 +1,379 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* `dark:` utilities follow the .dark class on <html> (set by the theme toggle / system setting). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─────────────────────────────────────────────────────────────
+   Jyntra design tokens — indigo / electric-yellow / lime on cool off-white.
+   Palette sampled from supplied Super.money screenshots (see docs/DESIGN_REFERENCE_ANALYSIS.md);
+   values are close approximations, not official brand codes.
+   Components never hardcode colours: use bg-background, bg-card, text-primary, bg-lime, bg-sun, etc.
+   Legacy names (--brand-blue, --brand-violet, --accent-brand, --forest) are kept and remapped so older components follow the new identity.
+   ───────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light;
+  --indigo: #5046f5;          /* brand primary; 5.9:1 on white, safe for text */
+  --indigo-deep: #2e2a97;     /* header bands, pressed states */
+  --indigo-soft: #ecebff;     /* tinted tiles, segmented-tab track */
+  --sun: #fdff1f;             /* electric yellow: scan/primary highlight, always with dark text */
+  --lime: #b5ee85;            /* primary CTA surface, always with dark text */
+  --lime-deep: #2f7a1c;       /* lime family used as text/outline */
+  --magenta: #c42ccb;         /* tags (text); pale tint below */
+  --magenta-soft: #fbe8fc;
+  --mint-soft: #e6f7ea;
+
+  --brand-solid: var(--indigo);
+  --brand-blue: var(--indigo);
+  --brand-indigo: var(--indigo);
+  --brand-violet: var(--indigo);
+  --brand-gradient: linear-gradient(160deg, #5b52f7 0%, #4338e8 55%, #2e2a97 100%);
+
+  --background: #f9fbfc;
+  --foreground: #14122b;
+  --card: #ffffff;
+  --card-foreground: #14122b;
+  --popover: #ffffff;
+  --popover-foreground: #14122b;
+  --primary: var(--indigo);
+  --primary-foreground: #ffffff;
+  --secondary: #f0f1f7;
+  --secondary-foreground: #14122b;
+  --muted: #f0f1f7;
+  --muted-foreground: #5f6275;
+  --accent: var(--indigo-soft);
+  --accent-foreground: #2e2a97;
+  --accent-brand: var(--indigo);
+  --accent-brand-foreground: var(--indigo);
+  --forest: var(--lime-deep);
+  --destructive: #d93a3a;
+  --border: #e4e6ef;
+  --input: #d6d9e6;
+  --ring: var(--indigo);
+  --chart-1: #5046f5;
+  --chart-2: #8bd45a;
+  --chart-3: #e6c700;
+  --chart-4: #c42ccb;
+  --chart-5: #2e2a97;
+  --radius: 0.875rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #14122b;
+  --sidebar-primary: var(--indigo);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--indigo-soft);
+  --sidebar-accent-foreground: #2e2a97;
+  --sidebar-border: #e4e6ef;
+  --sidebar-ring: var(--indigo);
+
+  --success: #1f8a3a;
+  --warning: #a86b00;
+  --info: var(--indigo);
+  --shadow-hard: 0 1px 0 rgba(20,18,43,.04), 0 8px 24px -12px rgba(80,70,245,.35);
+  --shadow-tile: inset 0 1px 0 #fff, 0 1px 2px rgba(20,18,43,.06);
+  --shadow-sheet: 0 -12px 32px -16px rgba(46,42,151,.35);
+}
+
+.dark {
+  color-scheme: dark;
+  --indigo: #7a72ff;
+  --indigo-deep: #2e2a97;
+  --indigo-soft: #24214f;
+  --sun: #fdff1f;
+  --lime: #b5ee85;
+  --lime-deep: #9be06a;
+  --magenta: #ee7df3;
+  --magenta-soft: #3a1c3d;
+  --mint-soft: #16301c;
+
+  --brand-gradient: linear-gradient(160deg, #4a41e0 0%, #3a31c4 55%, #2e2a97 100%);
+  --background: #0d0c1f;
+  --foreground: #f3f3fb;
+  --card: #16152e;
+  --card-foreground: #f3f3fb;
+  --popover: #16152e;
+  --popover-foreground: #f3f3fb;
+  --primary: #7a72ff;
+  --primary-foreground: #0d0c1f;
+  --secondary: #1d1c3a;
+  --secondary-foreground: #f3f3fb;
+  --muted: #1d1c3a;
+  --muted-foreground: #a3a5bd;
+  --accent: var(--indigo-soft);
+  --accent-foreground: #d9d6ff;
+  --destructive: #ff7a7a;
+  --border: #2a2950;
+  --input: #34335e;
+  --ring: #7a72ff;
+  --chart-1: #7a72ff;
+  --chart-2: #b5ee85;
+  --chart-3: #fdff1f;
+  --chart-4: #ee7df3;
+  --chart-5: #d9d6ff;
+  --sidebar: #11102a;
+  --sidebar-foreground: #f3f3fb;
+  --sidebar-primary: #7a72ff;
+  --sidebar-primary-foreground: #0d0c1f;
+  --sidebar-accent: #24214f;
+  --sidebar-accent-foreground: #d9d6ff;
+  --sidebar-border: #2a2950;
+  --sidebar-ring: #7a72ff;
+
+  --success: #6fd98a;
+  --warning: #f2c14e;
+  --info: #7a72ff;
+  --shadow-hard: 0 1px 0 rgba(255,255,255,.03), 0 8px 24px -12px rgba(0,0,0,.7);
+  --shadow-tile: inset 0 1px 0 rgba(255,255,255,.06), 0 1px 2px rgba(0,0,0,.4);
+  --shadow-sheet: 0 -12px 32px -16px rgba(0,0,0,.7);
+}
+
+@theme inline {
+  --font-heading: "Bricolage Grotesque Variable", "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-bricolagegrotesque: var(--font-heading);
+  --font-inter: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Newsreader Variable", "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --color-indigo: var(--indigo);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-sun: var(--sun);
+  --color-lime: var(--lime);
+  --color-lime-deep: var(--lime-deep);
+  --color-magenta: var(--magenta);
+  --color-magenta-soft: var(--magenta-soft);
+  --color-mint-soft: var(--mint-soft);
+  --color-accent-brand: var(--accent-brand);
+  --color-accent-brand-foreground: var(--accent-brand-foreground);
+  --color-forest: var(--forest);
+  --color-brand-solid: var(--brand-solid);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-indigo: var(--brand-indigo);
+  --color-brand-violet: var(--brand-violet);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.15);
+  --radius-2xl: calc(var(--radius) * 1.4);
+  --radius-3xl: calc(var(--radius) * 1.7);
+  --radius-4xl: calc(var(--radius) * 2);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-heading); letter-spacing: -0.015em; }
+  h1, h2 { font-weight: 800; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    min-height: 100dvh;
+  }
+  /* Pointer cursor on everything clickable (the preset's "pointer" option; Tailwind v4 dropped it). */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="tab"],
+  [role="option"],
+  [role="menuitem"],
+  [role="radio"],
+  summary,
+  select:not(:disabled),
+  label:has(input:not(:disabled)),
+  input[type="checkbox"]:not(:disabled),
+  input[type="file"]::file-selector-button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: var(--brand-gradient);
+  }
+  .text-brand-gradient {
+    background-image: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 22%, transparent) transparent;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Keeps the phone tab bar clear of the home indicator */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ───────── Landing page motion (small, calm, and off for prefers-reduced-motion) ───────── */
+@keyframes lp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes lp-glow { 0%, 100% { opacity: .16; } 50% { opacity: .3; } }
+@keyframes lp-pop { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes lp-shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes lp-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes lp-ping { 0% { transform: scale(1); opacity: .6; } 80%, 100% { transform: scale(2.4); opacity: 0; } }
+
+.reveal { transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+.reveal[data-reveal="hidden"] { opacity: 0; transform: translateY(24px); }
+.reveal[data-reveal="hidden"] .lp-grow { transform: scaleX(0); animation: none; }
+.lp-grow { transform-origin: left center; animation: lp-grow 1.1s cubic-bezier(.22,1,.36,1) .25s both; }
+.lp-float { animation: lp-float 7s ease-in-out infinite; }
+.lp-glow { animation: lp-glow 5s ease-in-out infinite; }
+.lp-pop { animation: lp-pop .6s cubic-bezier(.22,1,.36,1) both; }
+.lp-ping { animation: lp-ping 2s cubic-bezier(0,0,.2,1) infinite; }
+.lp-shimmer { background-size: 200% 100%; animation: lp-shimmer 6s linear infinite; }
+.lp-lift { transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.lp-lift:hover { transform: translateY(-2px); border-color: var(--foreground); }
+.lp-arrow { transition: transform .2s ease; }
+.group:hover .lp-arrow { transform: translateX(4px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .lp-grow, .lp-float, .lp-glow, .lp-pop, .lp-ping, .lp-shimmer, .lp-lift, .lp-arrow { animation: none !important; transition: none !important; }
+  .reveal[data-reveal="hidden"] { opacity: 1; transform: none; }
+  .reveal[data-reveal="hidden"] .lp-grow { transform: none; }
+}
+
+
+/* ───────── Surfaces, loading and editorial utilities ───────── */
+@keyframes sk-sweep { to { transform: translateX(100%); } }
+@keyframes sweep { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes rise-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.08); opacity: 1; } }
+
+@layer utilities {
+  /* One shimmer for the whole app: a soft purple-grey bone with a light band sweeping left to right. */
+  .sk-shimmer {
+    position: relative; overflow: hidden;
+    background-color: color-mix(in oklab, var(--indigo) 7%, var(--muted));
+  }
+  .sk-shimmer::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    transform: translateX(-100%);
+    background: linear-gradient(100deg, transparent 20%, color-mix(in oklab, var(--card) 70%, transparent) 50%, transparent 80%);
+    animation: sk-sweep 1.6s ease-in-out infinite;
+  }
+  /* Reloads after the first successful load: the content stays, only a light band passes over it. */
+  .refresh-shimmer { position: relative; transition: opacity .2s; }
+  .refresh-shimmer[data-active="true"] { opacity: .78; }
+  .refresh-shimmer[data-active="true"]::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+    transform: translateX(-100%);
+    background: linear-gradient(100deg, transparent 25%, color-mix(in oklab, var(--indigo) 9%, transparent) 50%, transparent 75%);
+    animation: sk-sweep 1.8s ease-in-out infinite;
+  }
+  .refresh-shimmer.no-refresh-sweep[data-active="true"]::after { content: none; animation: none; }
+  .sync-sweep {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent-brand) 14%, transparent), transparent);
+    animation: sweep 1.8s ease-in-out infinite;
+  }
+  .rise-in { animation: rise-in .35s cubic-bezier(.22,1,.36,1) both; }
+  /* Flat panel: hairline border, no shadow. Hover darkens the border instead of lifting. */
+  .surface {
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: border-color .15s ease, background-color .15s ease;
+  }
+  .surface-hover:hover { border-color: var(--indigo); }
+  /* Neo-brutalist accent: used sparingly for the one primary thing on a screen. */
+  .brut {
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-hard);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .brut:hover { transform: translateY(-1px); }
+  .brut:active { transform: translateY(1px) scale(.99); }
+  .hairline-gradient { background: var(--border); height: 1px; }
+  /* Editorial type helpers */
+  .eyebrow { font-family: var(--font-heading); font-weight: 700; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
+  .display { font-family: var(--font-heading); font-weight: 800; letter-spacing: -0.025em; line-height: 1.05; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .rule-top { border-top: 1px solid var(--border); }
+  /* Jyntra surfaces: indigo hero zone + rounded white sheet, soft tiles, outlined tags */
+  .hero-zone { background: var(--brand-gradient); color: #fff; }
+  @media (max-width: 639px) { .sheet { background: var(--background); border-radius: 1.75rem 1.75rem 0 0; box-shadow: var(--shadow-sheet); border-top: 1px solid color-mix(in oklab, var(--sun) 70%, transparent); } }
+  .tile { background: var(--card); border: 1px solid var(--border); border-radius: 1rem; box-shadow: var(--shadow-tile); }
+  .btn-lime { background: var(--lime); color: #14220f; font-weight: 700; }
+  .btn-sun { background: var(--sun); color: #14122b; font-weight: 700; }
+  .tag { display: inline-flex; align-items: center; font-size: .6875rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: .1rem .4rem; border-radius: .25rem; border: 1px solid currentColor; }
+  .tag-magenta { color: var(--magenta); background: var(--magenta-soft); }
+  .tag-green { color: var(--lime-deep); background: var(--mint-soft); }
+}
+
+body { background-image: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-shimmer::after, .refresh-shimmer::after, .sync-sweep, .rise-in { animation: none !important; }
+  .brut, .brut:hover, .brut:active { transition: none !important; transform: none !important; }
+}
+
+/* ───────── App motion: calm route entrance, tile lift. Off for prefers-reduced-motion. ───────── */
+@keyframes page-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.page-enter { animation: page-enter .28s cubic-bezier(.22, 1, .36, 1) both; }
+.tile { transition: transform .18s ease, box-shadow .18s ease; }
+@media (hover: hover) { a.tile:hover, button.tile:hover { transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .page-enter { animation: none; } .tile { transition: none; } a.tile:hover, button.tile:hover { transform: none; } }
+
+/* Staggered entrance for list children (first 8). Off for reduced motion. */
+.stagger-in > * { animation: rise-in .38s cubic-bezier(.22, 1, .36, 1) both; }
+.stagger-in > *:nth-child(2) { animation-delay: 40ms; } .stagger-in > *:nth-child(3) { animation-delay: 80ms; } .stagger-in > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-in > *:nth-child(5) { animation-delay: 160ms; } .stagger-in > *:nth-child(6) { animation-delay: 200ms; } .stagger-in > *:nth-child(7) { animation-delay: 240ms; } .stagger-in > *:nth-child(n+8) { animation-delay: 280ms; }
+@media (prefers-reduced-motion: reduce) { .stagger-in > * { animation: none; } }

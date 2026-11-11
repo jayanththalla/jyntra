@@ -1,0 +1,4 @@
+{
+  "_readme": "Companies whose public ATS job board (Greenhouse, Lever or Ashby) is synced into the Companies directory. Add { name, ats, slug, city, website }. The slug is the part of the careers URL after the provider's domain (boards.greenhouse.io/<slug>, jobs.lever.co/<slug>, jobs.ashbyhq.com/<slug>). Run `npm run boards:probe` to see which entries work, or `npm run boards:discover` to find new ones from company websites. Only jobs whose location matches the city are kept.",
+  "boards": []
+}

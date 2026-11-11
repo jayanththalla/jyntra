@@ -1,0 +1,27 @@
+# OPTIONAL FALLBACK scheduler for job ingestion. The primary design is a long-running worker (`npm run jobs:worker`, see
+# docs/INGESTION.md). GitHub cron is best-effort and pauses after 60 days of repo inactivity, so correctness never depends on
+# it: sources carry their own next_check_at in PostgreSQL and this run simply drains whatever is due.
+# Secrets needed: DATABASE_URL (a connection string the Action may use).
+name: ingest-jobs
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+  workflow_dispatch: {}
+permissions: {}
+concurrency: { group: ingest-jobs, cancel-in-progress: false }
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --include=dev
+      - name: Drain due sources
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}", JOB_SYNC_BUDGET_MS: "600000" }
+        run: test -n "$DATABASE_URL" && npm run jobs:sync
+      - name: Daily discovery step (bounded by JOB_DISCOVERY_DAILY_LIMIT)
+        if: github.event.schedule == '7 * * * *' || github.event_name == 'workflow_dispatch'
+        env: { DATABASE_URL: "${{ secrets.DATABASE_URL }}" }
+        run: npm run jobs:discover

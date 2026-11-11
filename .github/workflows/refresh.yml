@@ -1,0 +1,47 @@
+# Scheduled data refresh for Jyntra. THIS FILE DOES NOTHING UNTIL YOU CONFIGURE IT:
+#   1. Push the repo to GitHub (Actions run only there).
+#   2. Repo → Settings → Secrets and variables → Actions → add:
+#        APP_URL      e.g. https://jyntra.onrender.com   (no trailing slash)
+#        CRON_SECRET  the same value as the CRON_SECRET env var on the server (16+ characters)
+#   3. Check the "Actions" tab after the first scheduled run; a failing run turns red and GitHub emails you.
+# GitHub cron is best-effort (can be delayed several minutes) and is disabled after 60 days without repo activity.
+name: refresh-data
+on:
+  schedule:
+    - cron: "17 */6 * * *"   # every 6 hours, at :17 (off the busy :00)
+  workflow_dispatch: {}
+permissions: {}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Refresh funding news (runs inline)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$APP_URL" && test -n "$CRON_SECRET" || { echo "APP_URL / CRON_SECRET secrets are not set"; exit 1; }
+          curl --fail-with-body --silent --show-error --max-time 120 --retry 2 --retry-delay 10 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/refresh?scope=news"
+      - name: Company jobs sync (directory apply links; continues on the server)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 120 --retry 2 --retry-delay 10 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/refresh?scope=companies"
+      - name: Start startups and jobs discovery (continues in the background on the server)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 --retry 2 --retry-delay 10 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/refresh?scope=discovery"
+      - name: Check source health (fails this run if a source is failing, stale or has never run)
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 60 --retry 2 --retry-delay 10 \
+            -X POST -H "Authorization: Bearer $CRON_SECRET" "$APP_URL/api/cron/refresh?scope=health"
