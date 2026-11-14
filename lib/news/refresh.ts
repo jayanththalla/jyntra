@@ -69,25 +69,27 @@ async function recordFeed(feed: string, ok: boolean, category: string | null, se
 async function fromFeeds(): Promise<{ articles: ArticleInput[]; partialError?: string }> {
   const articles: ArticleInput[] = [];
   const failed: string[] = [];
-  for (const feed of FEEDS) {
-    try {
-      // A feed answered from an OLD cached copy is a failed read: its stories are still usable, but it must not count as a success.
-      const r = await cachedTextInfo(feed.url, settings.cacheHours.rss, { validate: (b) => { if (!/<(rss|feed|rdf:RDF)\b/i.test(b)) throw new Error("not a feed"); } });
-      const items = parseRss(r.body);
-      if (r.from === "stale") {
-        failed.push(`${feed.name}: ${r.error?.category ?? "network"} (served cached copy)`);
-        await recordFeed(feed.name, false, r.error?.category ?? "network", true);
-      } else await recordFeed(feed.name, true, null, false);
-      for (const it of items) {
-        const title = it.title.replace(/^\[[^\]]+\]\s*/, "");
-        if (NOT_A_RAISE.test(title) || !parseFundingHeadline(title, it.description)) continue;
-        articles.push({ url: it.link, headline: title, publisher: feed.name, summary: it.description || null, publishedAt: it.pubDate, provider: "rss" });
+  await Promise.all(
+    FEEDS.map(async (feed) => {
+      try {
+        // A feed answered from an OLD cached copy is a failed read: its stories are still usable, but it must not count as a success.
+        const r = await cachedTextInfo(feed.url, settings.cacheHours.rss, { validate: (b) => { if (!/<(rss|feed|rdf:RDF)\b/i.test(b)) throw new Error("not a feed"); } });
+        const items = parseRss(r.body);
+        if (r.from === "stale") {
+          failed.push(`${feed.name}: ${r.error?.category ?? "network"} (served cached copy)`);
+          await recordFeed(feed.name, false, r.error?.category ?? "network", true);
+        } else await recordFeed(feed.name, true, null, false);
+        for (const it of items) {
+          const title = it.title.replace(/^\[[^\]]+\]\s*/, "");
+          if (NOT_A_RAISE.test(title) || !parseFundingHeadline(title, it.description)) continue;
+          articles.push({ url: it.link, headline: title, publisher: feed.name, summary: it.description || null, publishedAt: it.pubDate, provider: "rss" });
+        }
+      } catch (e) {
+        failed.push(`${feed.name}: ${errorCategory(e)}`);
+        await recordFeed(feed.name, false, errorCategory(e), false);
       }
-    } catch (e) {
-      failed.push(`${feed.name}: ${errorCategory(e)}`);
-      await recordFeed(feed.name, false, errorCategory(e), false);
-    }
-  }
+    })
+  );
   if (failed.length === FEEDS.length) throw new FetchError(`all feeds failed (${failed.join("; ")})`, undefined, "network");
   return { articles, partialError: failed.length ? failed.join("; ") : undefined };
 }
