@@ -7,8 +7,6 @@
 # GitHub cron is best-effort (can be delayed several minutes) and is disabled after 60 days without repo activity.
 name: refresh-data
 on:
-  schedule:
-    - cron: "17 */6 * * *"   # every 6 hours, at :17 (off the busy :00)
   workflow_dispatch: {}
 permissions: {}
 jobs:

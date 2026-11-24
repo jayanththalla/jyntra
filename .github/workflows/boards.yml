@@ -2,8 +2,6 @@
 # GitHub cron is best-effort (minimum 5 minutes, often delayed) and pauses after 60 days without repo activity.
 name: refresh-company-boards
 on:
-  schedule:
-    - cron: "11 */2 * * *"   # every 2 hours
   workflow_dispatch: {}
 permissions: {}
 jobs:
